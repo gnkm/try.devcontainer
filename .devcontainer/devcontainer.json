@@ -1,7 +1,7 @@
 {
     "name": "Dev Container with Claude and Python",
     "build": {
-        "dockerfile": "Dockerfile.minimal",
+        "dockerfile": "Dockerfile",
         "args": {
             "TZ": "${localEnv:TZ:Asia/Tokyo}",
             "CLAUDE_CODE_VERSION": "latest",
