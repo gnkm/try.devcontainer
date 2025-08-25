@@ -64,10 +64,8 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 # Install Python development tools
 RUN pip3 install --user --no-cache-dir \
     ruff \
-    black \
     mypy \
     pytest \
-    ipython \
     uv
 
 # Set up basic git configuration
