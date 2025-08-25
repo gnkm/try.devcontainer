@@ -1,3 +1,4 @@
+# Using Node.js base image as it's required for Claude Code installation
 FROM node:20
 
 ARG TZ
@@ -78,7 +79,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
     -x
 
-# Install Claude
+# Install Claude Code CLI (requires Node.js/npm)
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 
