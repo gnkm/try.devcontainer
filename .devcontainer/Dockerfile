@@ -58,9 +58,10 @@ RUN ARCH=$(dpkg --print-architecture) && \
 # Set up non-root user
 USER node
 
-# Install global packages
+# Install global packages with proper permissions (directory created earlier)
+
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
-ENV PATH=$PATH:/usr/local/share/npm-global/bin
+ENV PATH=/usr/local/share/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Set the default shell to zsh rather than sh
 ENV SHELL=/bin/zsh
@@ -80,13 +81,21 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -x
 
 # Install Claude Code CLI (requires Node.js/npm)
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+RUN npm config set prefix /usr/local/share/npm-global && \
+    npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} && \
+    echo "Claude CLI installed successfully" && \
+    ls -la /usr/local/share/npm-global/bin/ && \
+    /usr/local/share/npm-global/bin/claude --version || echo "Claude CLI installed but version check failed"
 
 
-# Copy and set up firewall script
+# Copy and set up firewall script (optional - can be run manually if needed)
 COPY init-firewall.sh /usr/local/bin/
 USER root
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
     echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
-    chmod 0440 /etc/sudoers.d/node-firewall
+    chmod 0440 /etc/sudoers.d/node-firewall && \
+    echo "#!/bin/bash" > /usr/local/bin/setup-firewall && \
+    echo "echo 'Running firewall setup...'" >> /usr/local/bin/setup-firewall && \
+    echo "/usr/local/bin/init-firewall.sh || echo 'Firewall setup failed, continuing...'" >> /usr/local/bin/setup-firewall && \
+    chmod +x /usr/local/bin/setup-firewall
 USER node

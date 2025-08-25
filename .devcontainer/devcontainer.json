@@ -1,22 +1,20 @@
 {
-    "name": "Claude Code Sandbox",
+    "name": "Dev Container with Claude and Python",
     "build": {
-        "dockerfile": "Dockerfile",
+        "dockerfile": "Dockerfile.minimal",
         "args": {
             "TZ": "${localEnv:TZ:Asia/Tokyo}",
             "CLAUDE_CODE_VERSION": "latest",
-            "GIT_DELTA_VERSION": "0.18.2",
-            "ZSH_IN_DOCKER_VERSION": "1.2.0"
+            "GIT_DELTA_VERSION": "0.18.2"
         }
     },
-    "runArgs": [
-        "--cap-add=NET_ADMIN",
-        "--cap-add=NET_RAW"
-    ],
     "customizations": {
         "vscode": {
             "extensions": [
-                "eamodio.gitlens"
+                "Anthropic.claude-code",
+                "ms-python.python",
+                "charliermarsh.ruff",
+                "mhutchie.git-graph"
             ],
             "settings": {
                 "terminal.integrated.defaultProfile.linux": "zsh",
@@ -28,20 +26,24 @@
                     "zsh": {
                         "path": "zsh"
                     }
-                }
+                },
+                "claude-code.cliPath": "/usr/local/share/npm-global/bin/claude",
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "explicit",
+                    "source.fixAll": "explicit"
+                },
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "editor.formatOnSave": true
+                },
+                "ruff.lint.enable": true,
+                "ruff.format.enable": true
             }
         }
     },
     "remoteUser": "node",
-    "mounts": [
-        "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-        "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume"
-    ],
-    "containerEnv": {
-        "CLAUDE_CONFIG_DIR": "/home/node/.claude",
-        "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
-    },
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
     "workspaceFolder": "/workspace",
-    "postCreateCommand": "sudo /usr/local/bin/init-firewall.sh"
+    "postCreateCommand": "uv sync || echo 'No pyproject.toml found' && echo 'Tools installed:' && claude --version && python3 --version && ruff --version"
 }
