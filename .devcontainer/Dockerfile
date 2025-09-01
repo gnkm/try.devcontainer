@@ -2,7 +2,7 @@
 FROM node:20-bullseye-slim
 
 # Set timezone
-ARG TZ=UTC
+ARG TZ=Asia/Tokyo
 ENV TZ="$TZ"
 
 # Define versions
