@@ -14,7 +14,8 @@
                 "Anthropic.claude-code",
                 "ms-python.python",
                 "charliermarsh.ruff",
-                "mhutchie.git-graph"
+                "mhutchie.git-graph",
+                "tamasfe.even-better-toml"
             ],
             "settings": {
                 "terminal.integrated.defaultProfile.linux": "zsh",
